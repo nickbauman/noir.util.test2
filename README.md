@@ -1,6 +1,6 @@
 # noir-test2
 
-If you want to write more comprehensive integration tests in the noir framework with the following idiom:
+An alternative Noir test harness. If you want to write more idiomatic integration tests in the excellent Noir framework like this:
 
         (deftest test-signup-validation
                 (-> (send-request [:post "/signup/"] {"email" "foo.bar@gmail.com" 
@@ -13,17 +13,19 @@ If you want to write more comprehensive integration tests in the noir framework 
                                 [:p {:class "error"} "Passwords do not match"]
                                 [:p {:class "error"} "Emails do not match"]])))
 
-Note this uses a 3rd party HTML parser to aid in the assertions.
+Give it a try. This should run all your existing tests for Noir with just a change to the require  or use from _noir.util.test_ to _noir.util.test2_. Note this uses a 3rd party HTML parser to aid in the assertions. See below.
 
 ## Usage
 
 To use this, add the *lein-git-deps* dependency to your dev-dependencies property in your project.clj. Then add git repo for the HTML parsing library the tests use.
 
-        ...
-        :dev-dependencies [lein-git-deps "0.0.1-SNAPSHOT"]
-        ...
-        :git-dependencies [["https://github.com/nickbauman/htmlcleaner.git"]]
-        :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"]
+        (defproject noir-test2 "1.0.0-SNAPSHOT"
+          ...
+          :dev-dependencies [lein-git-deps "0.0.1-SNAPSHOT"]
+          ...
+          :git-dependencies [["https://github.com/nickbauman/htmlcleaner.git"]]
+          :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"]
+        ...)
 
 Then, run:
 
