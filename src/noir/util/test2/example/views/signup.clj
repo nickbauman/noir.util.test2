@@ -1,5 +1,5 @@
-(ns noir-test2.example.views.signup
-  (:require [noir-test2.example.views.common :as common])
+(ns noir.util.test2.example.views.signup
+  (:require [noir.util.test2.example.views.common :as common])
   (:use noir.core
        [hiccup.core :only [html h]]
        [hiccup.page-helpers :only [doctype include-css]]

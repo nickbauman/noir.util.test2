@@ -1,4 +1,4 @@
-# noir-test2
+# noir.util.test2
 
 An alternative Noir test harness. If you want to write more idiomatic integration tests in the excellent Noir framework like this:
 

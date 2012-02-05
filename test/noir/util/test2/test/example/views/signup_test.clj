@@ -1,8 +1,8 @@
-(ns noir-test2.test.example.views.signup-test
+(ns noir.util.test2.test.example.views.signup-test
   (:use 
-    [noir-test2.example.server]
-    [noir-test2.example.middleware]
-    [noir-test2.example.views.signup]
+    [noir.util.test2.example.server]
+    [noir.util.test2.example.middleware]
+    [noir.util.test2.example.views.signup]
     [noir.util.test2]
     [clojure.test]))
 

@@ -1,4 +1,4 @@
-(ns noir-test2.example.middleware
+(ns noir.util.test2.example.middleware
   (:require [noir.response :as noir.response]))
 
 (defn redirect-to-slash

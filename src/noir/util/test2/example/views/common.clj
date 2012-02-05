@@ -1,4 +1,4 @@
-(ns noir-test2.example.views.common
+(ns noir.util.test2.example.views.common
   (:use [noir.core :only [defpartial]]
         [hiccup.page-helpers :only [include-css html5]]))
 
