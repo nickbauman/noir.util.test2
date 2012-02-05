@@ -23,9 +23,11 @@ To use this, add the *lein-git-deps* dependency to your dev-dependencies propert
           ...
           :dev-dependencies [lein-git-deps "0.0.1-SNAPSHOT"]
           ...
-          :git-dependencies [["https://github.com/nickbauman/htmlcleaner.git"]]
-          :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"]
-        ...)
+		  :git-dependencies [["git@github.com:nickbauman/htmlcleaner.git"]
+                             ["git@github.com:nickbauman/noir.util.test2.git"]]
+		  :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"
+                         ".lein-git-deps/noir.util.test2/src"]
+          ...)
 
 Then, run:
 
