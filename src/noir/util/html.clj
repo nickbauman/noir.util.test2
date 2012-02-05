@@ -84,18 +84,17 @@
   "Finds elements matching ALL attribute names, values and element text (if present): 
   'html-string' '<html><head>...' 
   'hattr-maps' {:foo 'bar' :baz 'quux'} 
-  'tag-value' can be nil, otherwise whatever you wish to assert between the open and close of the element"
-  [html-string hattr-maps tag-value]
+  'elem-value' can be nil, otherwise whatever you wish to assert between the open and close of the element"
+  [html-string elem-kw hattr-maps elem-value]
   (if html-string
     (let [attr-maps (into {} (map (fn[[x y]] [(name x) y]) hattr-maps))
           jcleaner-props (cleaner-props)
-          cnv-vec-fn (fn[pair] (into (vector) pair))
           dom (html2dom html-string jcleaner-props)
-          jTagNode (if tag-value
-                     (.findElementWithValueAttNamesAndValues dom tag-value (keys attr-maps) (vals attr-maps) true false)
-                     (.findElementWithAttNamesAndValues dom (keys attr-maps) (vals attr-maps) true))]
-      (if-let [jtn jTagNode]
-        (to-markup jtn jcleaner-props)))
+          jtagnode (if elem-value
+                     (.findElementWithNameAndValueAndAttNamesAndValues dom (name elem-kw) elem-value (keys attr-maps) (vals attr-maps) true false)
+                     (.findElementWithNameAndAttNamesAndValues dom (name elem-kw) (keys attr-maps) (vals attr-maps) true false))]
+      (if jtagnode
+        (to-markup jtagnode jcleaner-props)))
     (throw (RuntimeException. (str "html-string is " html-string)))))
 
 (defn eval-xp-expr

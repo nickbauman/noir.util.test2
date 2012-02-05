@@ -34,3 +34,14 @@
     (has-tags [[:form {:action "/signup"}]
                [:p {:class "error"} "Passwords do not match"]
                [:p {:class "error"} "Emails do not match"]])))
+
+(deftest test-signup-post-validation-only-email
+  (-> (send-request [:post "/signup/"] {"email" "foo.bar@gmail.com" 
+                                      "email-confirm" "foo.bar@kkd"
+                                      "password" "f00lsG4m3" 
+                                      "password-confirm" "f00lsG4m3"})
+    (has-status 200)
+    (!body-contains #"Thanks for Signing Up")
+    (has-tags [[:form {:action "/signup"}]
+               [:p {:class "error"} "Emails do not match"]])
+    (!has-tags [[:p {:class "error"} "Passwords do not match"]])))

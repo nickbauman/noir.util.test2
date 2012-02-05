@@ -39,28 +39,35 @@
   (is (= cont (get resp :body)))
   resp)
 
-(defn has-tags
-  "Asserts that body contains tags. Tags must be in the form of 
+(defn assert-tags
+  "Asserts that a result of a tag search applies to func. Returns resp. Tags must be in the form of 
   [:element-name {:attribute-name \"attribute-value\"} \"element text (optional)\"]"
-  [resp tags]
+  [resp tags func]
   (if-let [body (get resp :body)] 
     (if (seq tags)
       (do
         (loop [ts tags]
           (if-let [[element-kw tag-assert tag-value] (first ts)]
-            (let [expectation (str "<" (name element-kw))
-                  tags-found-in-body (html/find-elem-with-matching-attrs body tag-assert tag-value)]
-              (if (is tags-found-in-body (str "element " expectation " of attribs " tag-assert " not found in " body))
-                (do 
-                  (is (< -1 (.indexOf tags-found-in-body expectation)) body)
-                  (if tag-value 
-                    (is (< -1 (.indexOf tags-found-in-body tag-value)) (str "'" tags-found-in-body "' does not contain '" tag-value "'"))
-                    resp))
+            (let [tags-found-in-body (html/find-elem-with-matching-attrs body element-kw tag-assert tag-value)]
+              
+              (if (is (func tags-found-in-body) (str "element '<" (name element-kw) ">' of attribs " tag-assert " not found in " body))
                 resp)
               (recur (rest ts)))))
         resp)
       (throw (RuntimeException. "tags not found")))
-    (throw (RuntimeException. (str "response was " resp)))))
+    (throw (RuntimeException. (str "malformed response: " resp)))))
+
+(defn has-tags
+  "Asserts that body contains tags. Returns resp. Tags must be in the form of 
+  [:element-name {:attribute-name \"attribute-value\"} \"element text (optional)\"]"
+  [resp tags]
+  (assert-tags resp tags identity))
+
+(defn !has-tags
+  "Asserts that body DOES NOT have tags. Returns resp. Tags must be in the form of 
+  [:element-name {:attribute-name \"attribute-value\"} \"element text (optional)\"]"
+  [resp tags]
+  (assert-tags resp tags not))
 
 (defn body-contains
   "Asserts that a regular expression matches against resp's body. Returns resp."
