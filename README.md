@@ -19,7 +19,7 @@ Give it a try. This should run all your existing tests for Noir with just a chan
 
 To use this, add the *lein-git-deps* dependency to your dev-dependencies property in your project.clj. Then add git repo for the HTML parsing library the tests use.
 
-        (defproject noir-test2 "1.0.0-SNAPSHOT"
+        (defproject yourproject "1.0.0-SNAPSHOT"
           ...
           :dev-dependencies [lein-git-deps "0.0.1-SNAPSHOT"]
           ...
