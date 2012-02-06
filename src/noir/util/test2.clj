@@ -49,7 +49,6 @@
         (loop [ts tags]
           (if-let [[element-kw tag-assert tag-value] (first ts)]
             (let [tags-found-in-body (html/find-elem-with-matching-attrs body element-kw tag-assert tag-value)]
-              (println "(func tags-found-in-body)" (func tags-found-in-body))
               (if (is (func tags-found-in-body) (str "element '<" (name element-kw) ">' of attribs " tag-assert (if tag-value (str " of value '" tag-value "'") "") " failed for:\n" body))
                 resp)
               (recur (rest ts)))))
@@ -67,7 +66,7 @@
   "Asserts that body DOES NOT have tags. Returns resp. Tags must be in the form of 
   [:element-name {:attribute-name \"attribute-value\"} \"element text (optional)\"]"
   [resp tags]
-  (assert-tags resp tags not))
+  (assert-tags resp tags nil?))
 
 (defn body-contains
   "Asserts that a regular expression matches against resp's body. Returns resp."
