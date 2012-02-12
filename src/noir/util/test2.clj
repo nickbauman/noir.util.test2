@@ -71,20 +71,22 @@
 (defn body-contains
   "Asserts that a regular expression matches against resp's body. Returns resp."
   [resp ^java.util.regex.Pattern regex]
-    (if (get resp :body)
+  (let [body (:body resp)]
+    (if body
       (do
-        (is (re-find regex (get resp :body)))
+        (is (re-find regex body) (str "expected '" regex "' not found in:\n" body))
         resp)
-      (throw (RuntimeException. (str "response was " resp)))))
+      (throw (RuntimeException. (str "response was " resp))))))
 
 (defn !body-contains
   "Asserts that a regular expression does NOT match against resp. Returns resp."
   [resp ^java.util.regex.Pattern regex]
-  (if (get resp :body)
-    (do
-      (is (not (re-find regex (get resp :body))))
-      resp)
-    (throw (RuntimeException. (str "response was " resp)))))
+  (let [body (:body resp)]
+    (if body
+      (do
+        (is (not (re-find regex body)) (str "unexpected '" regex "' found in:\n" body))
+        resp)
+      (throw (RuntimeException. (str "response was " resp))))))
 
 (defn- make-request [route & [params]]
   (let [[method uri] (if (vector? route)
