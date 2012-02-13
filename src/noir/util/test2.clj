@@ -97,6 +97,10 @@
 (defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."
-  [route & [params]]
-  (let [handler (server/gen-handler options/*options*)]
-    (handler (make-request route params))))
+  ([route]
+    (send-request route nil options/*options*))
+  ([route params]
+    (send-request route params options/*options*))
+  ([route params opts]
+    (let [handler (server/gen-handler opts)]
+      (handler (make-request route params)))))
