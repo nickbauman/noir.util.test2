@@ -2,7 +2,6 @@
   ^{:doc "A Clojure wrapper around a fork of the Java HtmlCleaner library."}
   (:require [clojure.zip :as zip]
             [clojure.xml :as xml])
-  (:use clojure.contrib.zip-filter.xml) 
   (:import [org.htmlcleaner 
             HtmlCleaner
             CleanerProperties
