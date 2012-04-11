@@ -9,9 +9,15 @@ An alternative Noir test harness. If you want to write more idiomatic integratio
                                       "password-confirm" "f00lsllllll"})
                         (has-status 200)
                         (!body-contains #"Thanks for Signing Up")
-                        (has-tags [[:form {:action "/signup"}]
+                        (has-tags
+                                ; Elements without values: 
+                                [[:form {:action "/signup"}]
+                                ; Regular expressions in element values:
+                                [:h1 {:class "headline"} #"Errors found..."]
+                                ; Atributes and values of elements:
                                 [:p {:class "error"} "Passwords do not match"]
-                                [:p {:class "error"} "Emails do not match"]])))
+                                ; Any number of attributes, too:
+                                [:p {:id "emailerror" :class "error"} "Emails do not match"]])))
 
 Give it a try. This should run all your existing tests for Noir with just a change to the require  or use from _noir.util.test_ to _noir.util.test2_. Note this uses a 3rd party HTML parser to aid in the assertions. See below.
 
