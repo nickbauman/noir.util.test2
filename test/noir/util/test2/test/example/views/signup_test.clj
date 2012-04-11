@@ -10,6 +10,7 @@
   (-> (send-request [:get "/signup/"])
     (has-status 200)
     (has-tags [[:form {:action "/signup"}]
+               [:li {:id "linker"} #"home"]
                [:input {:type "text" :name "email"}]
                [:input {:type "text" :name "email-confirm"}]
                [:input {:type "password" :name "password"}]

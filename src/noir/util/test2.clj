@@ -94,6 +94,12 @@
                        [:get route])]
     {:uri uri :request-method method :params params}))
 
+(defn route2url
+  [route]
+  (let [h (server/gen-handler options/*options*)]
+    h
+  ))
+
 (defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."

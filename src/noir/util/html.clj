@@ -90,7 +90,9 @@
           jcleaner-props (cleaner-props)
           dom (html2dom html-string jcleaner-props)
           jtagnode (if elem-value
-                     (.findElementWithNameAndValueAndAttNamesAndValues dom (name elem-kw) elem-value (keys attr-maps) (vals attr-maps) true false)
+                     (if (= java.util.regex.Pattern (type elem-value))
+                       (.findElementWithNameAndPatternAndAttNamesAndValues dom (name elem-kw) elem-value (keys attr-maps) (vals attr-maps) true false)
+                       (.findElementWithNameAndValueAndAttNamesAndValues dom (name elem-kw) elem-value (keys attr-maps) (vals attr-maps) true false))
                      (.findElementWithNameAndAttNamesAndValues dom (name elem-kw) (keys attr-maps) (vals attr-maps) true false))]
       (if jtagnode
         (to-markup jtagnode jcleaner-props)))

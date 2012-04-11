@@ -22,14 +22,16 @@
 (defn- gen-form
   [& [options]]
     (let [formt (form-to [:post "/signup"]
-                         (vali/on-error :email error-item)
-                         (text-field "email" "Your Email") 
-                         (vali/on-error :email-confirm error-item)
-                         (text-field "email-confirm" "Confirm Your Email")
-                         (vali/on-error :password error-item)
-                         (password-field "password" "Choose Password")
-                         (vali/on-error :password-confirm error-item)
-                         (password-field "password-confirm" "Confirm Password")
+                         [:ul
+                          [:li {:id "linker"} [:a {:href "/"} "home"]]
+                          [:li (vali/on-error :email error-item)
+                           (text-field "email" "Your Email")]
+                          [:li (vali/on-error :email-confirm error-item)
+                           (text-field "email-confirm" "Confirm Your Email")]
+                          [:li (vali/on-error :password error-item)
+                           (password-field "password" "Choose Password")]
+                          [:li (vali/on-error :password-confirm error-item)
+                           (password-field "password-confirm" "Confirm Password")]]
                          (submit-button "Register and Signup for an Account"))]
       formt))
 
