@@ -8,6 +8,9 @@ An alternative Noir test harness. If you want to write more idiomatic integratio
                                       "password" "f00lsG4m3" 
                                       "password-confirm" "f00lsllllll"})
                         (has-status 200)
+                        ; Make sure something is in the page
+                        (body-contains #"Join Us!")
+                        ; Make sure something _is not_ in the markup
                         (!body-contains #"Thanks for Signing Up")
                         (has-tags
                                 ; Elements without values: 
