@@ -1,9 +1,10 @@
 (ns noir.util.test2.example.views.signup
   (:require [noir.util.test2.example.views.common :as common])
   (:use noir.core
+       [noir.response :only [redirect]] 
        [hiccup.core :only [html h]]
-       [hiccup.page-helpers :only [doctype include-css]]
-       [hiccup.form-helpers :only [form-to label password-field submit-button text-field]])
+       [hiccup.page :only [doctype include-css]]
+       [hiccup.form :only [form-to label password-field submit-button text-field]])
   (:require
     [noir.validation :as vali]))
 
@@ -50,3 +51,6 @@
                    "In a few minutes you should get an email from us with a link that you can click that will confirm your signup."
                    "")
     (render "/signup/" form)))
+
+(defpage "/foo/" [] 
+  (redirect "/signup/"))

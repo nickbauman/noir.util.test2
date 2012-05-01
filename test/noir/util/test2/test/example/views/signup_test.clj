@@ -46,3 +46,16 @@
     (has-tags [[:form {:action "/signup"}]
                [:p {:class "error"} "Emails do not match"]])
     (!has-tags [[:p {:class "error"} "Passwords do not match"]])))
+
+(deftest test-follow-redirects-works
+  (-> (send-request [:get "/foo/"])
+    (has-status 302)
+    (redirects-to "/signup/")
+    (-> (follow-redirect)
+      (has-tags [[:form {:action "/signup"}]
+                 [:li {:id "linker"} #"home"]
+                 [:input {:type "text" :name "email"}]
+                 [:input {:type "text" :name "email-confirm"}]
+                 [:input {:type "password" :name "password"}]
+                 [:input {:type "password" :name "password-confirm"}]
+                 [:input {:type "submit" :value "Register and Signup for an Account"}]]))))

@@ -97,8 +97,16 @@
 (defn route2url
   [route]
   (let [h (server/gen-handler options/*options*)]
-    h
-  ))
+    h))
+
+(defn serialize
+  "Returns the converted 'data-structure' into its canonical, homoiconic string representation"
+  [data-structure]
+  (let [w (java.io.StringWriter. 32)]
+    (binding [*print-dup* true
+              *out* w] 
+      (prn data-structure)
+      (str w))))
 
 (defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
@@ -110,3 +118,16 @@
   ([route params opts]
     (let [handler (server/gen-handler opts)]
       (handler (make-request route params)))))
+
+(defn follow-redirect
+  "Looks for a redirect header in 'resp' and sends a request using that"
+  [resp]
+  (send-request ((:headers resp) "Location")))
+
+(defn redirects-to
+  "Asserts that Ring response 'resp' redirects to 'redirect-url-fragment' string"
+  [resp redirect-url-fragment]
+  (do 
+    (is (= redirect-url-fragment ((:headers resp) "Location")))
+    resp))
+
