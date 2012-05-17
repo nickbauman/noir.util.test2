@@ -110,20 +110,6 @@
     (reduce (fn [rq [k v]] 
               (ring-request/header rq k v)) request headers)))
 
-;(defn send-request
-;  "Send a request to the Noir handler. Unlike with-noir, this will run
-;  the request within the context of all middleware."
-;  ([route]
-;    (send-request route nil options/*options*))
-;  ([route params]
-;    (send-request route params options/*options*))
-;  ([route params opts]
-;    (send-request route params options/*options* {}))
-;  ([route params opts headers-map]
-;    (let [handler (server/gen-handler opts)
-;          request (populate-headers (make-request route params) headers-map)]
-;      (handler request))))
-
 (defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."
@@ -139,22 +125,10 @@
   [response]
   (if-let [location (get (:headers response) "Location")]
     (let [headers (cookie-jar/cookies-for 
-                    (cookie-jar/merge-cookies (:headers response) {} location "localhost") 
+                    (cookie-jar/merge-cookies (:headers response) {} location "localhost")
                     :http location "localhost")]
       (send-request location nil headers))
     (throw (IllegalArgumentException. "Previous response was not a redirect"))))
-
-; TODO check scheme!
-;(defn follow-redirect
-;  "Looks for a redirect header in 'response' and sends a request using that. 
-;  Else throws IllegalArgumentException."
-;  [response]
-;  (println "response" response)
-;  (if-let [location (get (:headers response) "Location")]
-;    (send-request location nil options/*options* 
-;                  (cookie-jar/cookies-for 
-;                    (cookie-jar/merge-cookies (:headers response) {} location "localhost") :http location "localhost"))
-;    (throw (IllegalArgumentException. "Previous response was not a redirect"))))
 
 (defn redirects-to
   "Asserts that Ring response redirects to 'redirect-url-fragment' string"
