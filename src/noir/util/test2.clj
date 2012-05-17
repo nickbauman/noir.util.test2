@@ -1,12 +1,15 @@
 (ns noir.util.test2
   ^{:doc "A set of utilities for testing a Noir project."}
   (:use clojure.test)
-  (:require [noir.server :as server]
-            [noir.session :as session]
-            [noir.validation :as vali]
-            [noir.cookies :as cookies]
-            [noir.options :as options]
-            [noir.util.html :as html]))
+  (:require 
+    [noir.server :as server]
+    [noir.session :as session]
+    [noir.validation :as vali]
+    [noir.cookies :as cookies]
+    [noir.options :as options]
+    [ring.mock.request :as ring-request]
+    [peridot.cookie-jar :as cookie-jar]
+    [noir.util.html :as html]))
 
 (def content-types {:json "application/json"
                     :html "text/html"})
@@ -40,27 +43,33 @@
   resp)
 
 (defn assert-tags
-  "Asserts that a result of a tag search applies to func. Returns resp. Tags must be in the form of 
+  "Asserts that a result of a tag search applies to func. Returns response. 
+  Tags must be a collection where each element is in the form of 
   [:element-name {:attribute-name \"attribute-value\"} \"element text (optional)\"]"
-  [resp tags func]
-  (if-let [body (get resp :body)] 
+  [response tags func]
+  (if-let [body (get response :body)] 
     (if (seq tags)
       (do
         (loop [ts tags]
           (if-let [[element-kw tag-assert tag-value] (first ts)]
-            (let [tags-found-in-body (html/find-elem-with-matching-attrs body element-kw tag-assert tag-value)]
-              (if (is (func tags-found-in-body) (str "element '<" (name element-kw) ">' of attribs " tag-assert (if tag-value (str " of value '" tag-value "'") "") " failed for:\n" body))
-                resp)
+            (let [tags-found-in-body 
+                  (html/find-elem-with-matching-attrs body element-kw tag-assert tag-value)]
+              (if (is (func tags-found-in-body) 
+                      (str "element '<" (name element-kw) ">' of attribs " tag-assert 
+                           (if tag-value 
+                             (str " of value '" tag-value "'") "") 
+                           " failed for:\n" body))
+                response)
               (recur (rest ts)))))
-        resp)
+        response)
       (throw (RuntimeException. "tags not found")))
-    (throw (RuntimeException. (str "malformed response: " resp)))))
+    (throw (RuntimeException. (str "malformed response: " response)))))
 
 (defn has-tags
   "Asserts that body contains tags. Returns resp. Tags must be in the form of 
   [:element-name {:attribute-name \"attribute-value\"} \"element text (optional)\"]"
-  [resp tags]
-  (assert-tags resp tags identity))
+  [response tags]
+  (assert-tags response tags identity))
 
 (defn !has-tags
   "Asserts that body DOES NOT have tags. Returns resp. Tags must be in the form of 
@@ -79,14 +88,14 @@
       (throw (RuntimeException. (str "response was " resp))))))
 
 (defn !body-contains
-  "Asserts that a regular expression does NOT match against resp. Returns resp."
-  [resp ^java.util.regex.Pattern regex]
-  (let [body (:body resp)]
+  "Asserts that a regular expression does NOT match against response. Returns response."
+  [response ^java.util.regex.Pattern regex]
+  (let [body (:body response)]
     (if body
       (do
         (is (not (re-find regex body)) (str "unexpected '" regex "' found in:\n" body))
-        resp)
-      (throw (RuntimeException. (str "response was " resp))))))
+        response)
+      (throw (RuntimeException. (str "response was " response))))))
 
 (defn- make-request [route & [params]]
   (let [[method uri] (if (vector? route)
@@ -94,40 +103,63 @@
                        [:get route])]
     {:uri uri :request-method method :params params}))
 
-(defn route2url
-  [route]
-  (let [h (server/gen-handler options/*options*)]
-    h))
+(defn- populate-headers 
+  [request headers]
+  (if (empty? headers)
+    request
+    (reduce (fn [rq [k v]] 
+              (ring-request/header rq k v)) request headers)))
 
-(defn serialize
-  "Returns the converted 'data-structure' into its canonical, homoiconic string representation"
-  [data-structure]
-  (let [w (java.io.StringWriter. 32)]
-    (binding [*print-dup* true
-              *out* w] 
-      (prn data-structure)
-      (str w))))
+;(defn send-request
+;  "Send a request to the Noir handler. Unlike with-noir, this will run
+;  the request within the context of all middleware."
+;  ([route]
+;    (send-request route nil options/*options*))
+;  ([route params]
+;    (send-request route params options/*options*))
+;  ([route params opts]
+;    (send-request route params options/*options* {}))
+;  ([route params opts headers-map]
+;    (let [handler (server/gen-handler opts)
+;          request (populate-headers (make-request route params) headers-map)]
+;      (handler request))))
 
 (defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."
-  ([route]
-    (send-request route nil options/*options*))
-  ([route params]
-    (send-request route params options/*options*))
-  ([route params opts]
-    (let [handler (server/gen-handler opts)]
-      (handler (make-request route params)))))
+  [route & [params headers-map]]
+    (let [handler (server/gen-handler options/*options*)
+          request (populate-headers (make-request route params) headers-map)]
+      (handler request)))
 
+; TODO scheme!
 (defn follow-redirect
-  "Looks for a redirect header in 'resp' and sends a request using that"
-  [resp]
-  (send-request ((:headers resp) "Location")))
+  "Looks for a redirect header in 'response' and sends a request using that. 
+  Else throws IllegalArgumentException."
+  [response]
+  (if-let [location (get (:headers response) "Location")]
+    (let [headers (cookie-jar/cookies-for 
+                    (cookie-jar/merge-cookies (:headers response) {} location "localhost") 
+                    :http location "localhost")]
+      (send-request location nil headers))
+    (throw (IllegalArgumentException. "Previous response was not a redirect"))))
+
+; TODO check scheme!
+;(defn follow-redirect
+;  "Looks for a redirect header in 'response' and sends a request using that. 
+;  Else throws IllegalArgumentException."
+;  [response]
+;  (println "response" response)
+;  (if-let [location (get (:headers response) "Location")]
+;    (send-request location nil options/*options* 
+;                  (cookie-jar/cookies-for 
+;                    (cookie-jar/merge-cookies (:headers response) {} location "localhost") :http location "localhost"))
+;    (throw (IllegalArgumentException. "Previous response was not a redirect"))))
 
 (defn redirects-to
-  "Asserts that Ring response 'resp' redirects to 'redirect-url-fragment' string"
-  [resp redirect-url-fragment]
+  "Asserts that Ring response redirects to 'redirect-url-fragment' string"
+  [response redirect-url-fragment]
   (do 
-    (is (= redirect-url-fragment ((:headers resp) "Location")))
-    resp))
+    (is (= redirect-url-fragment ((:headers response) "Location")))
+    response))
 

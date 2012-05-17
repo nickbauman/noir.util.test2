@@ -1,6 +1,8 @@
 (defproject noir-test2 "1.0.0-SNAPSHOT"
   :description "Enhancements to noir.util.test"
   :dependencies [[org.clojure/clojure "1.4.0"]
+                 [ring-mock "0.1.2"]
+                 [peridot "0.0.5"]
                  [noir "1.3.0-beta3"]]
   :dev-dependencies [[lein-git-deps "0.0.1-SNAPSHOT"]
                      [lein-eclipse "1.0.0"]]

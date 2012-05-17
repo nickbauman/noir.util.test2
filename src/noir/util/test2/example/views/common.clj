@@ -1,6 +1,8 @@
 (ns noir.util.test2.example.views.common
   (:use [noir.core :only [defpartial]]
-        [hiccup.page :only [include-css html5]]))
+        [hiccup.page :only [include-css html5]])
+  (:require     
+    [noir.session :as session]))
 
 (defpartial layout [& content]
   (let [[title headline tagline announcement page] content]
@@ -25,5 +27,8 @@
 	          [:h1 headline]
 	          [:p {:id "tagline"} tagline]
 	          [:p {:class "announcement"} announcement]
-	          [:p {:class "page"} page]]
+	          [:p {:class "page"} 
+            (if-let [flash (session/flash-get :message)]
+              (list flash page)
+              page)]]
 	         [:footer [:div {:class "frame"} "Copyright &copy; 2012 | Services Etc."]]]]])))

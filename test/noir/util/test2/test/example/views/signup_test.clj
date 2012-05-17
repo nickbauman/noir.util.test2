@@ -52,6 +52,7 @@
     (has-status 302)
     (redirects-to "/signup/")
     (-> (follow-redirect)
+      (body-contains #"Redirected from /foo/") ; this message is a flash and we prove that following a redirect uses the same session...
       (has-tags [[:form {:action "/signup"}]
                  [:li {:id "linker"} #"home"]
                  [:input {:type "text" :name "email"}]

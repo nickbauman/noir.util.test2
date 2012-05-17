@@ -6,6 +6,7 @@
        [hiccup.page :only [doctype include-css]]
        [hiccup.form :only [form-to label password-field submit-button text-field]])
   (:require
+    [noir.session :as session]
     [noir.validation :as vali]))
 
 (defn valid? [{:keys [email email-confirm password password-confirm]}]
@@ -53,4 +54,5 @@
     (render "/signup/" form)))
 
 (defpage "/foo/" [] 
+  (session/flash-put! :message "Redirected from /foo/")
   (redirect "/signup/"))
