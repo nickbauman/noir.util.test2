@@ -24,20 +24,19 @@ An alternative Noir test harness. If you want to write more idiomatic integratio
                                     ; Any number of attributes, too:
                                     [:p {:id "emailerror" :class "error"} "Emails do not match"]]))))
 
-Give it a try. This should run all your existing tests for Noir with just a change to the require  or use from _noir.util.test_ to _noir.util.test2_. Note this uses a 3rd party HTML parser to aid in the assertions. See below.
+Give it a try. This should run all your existing tests for Noir with just a change to the require or use from _noir.util.test_ to _noir.util.test2_. Note this uses a 3rd party HTML parser to aid in the assertions. See below.
 
 ## Usage
 
-To use this, add the *lein-git-deps* dependency to your dev-dependencies property in your project.clj. Then add git repo for the HTML parsing library the tests use.
+To use this, add *lein-git-deps* as well as the *noir-test2* dependency to your :dev-dependencies property in your project.clj. Then add git repo for the HTML parsing library the tests use.
 
         (defproject yourproject "1.0.0-SNAPSHOT"
           ...
-          :dev-dependencies [lein-git-deps "0.0.1-SNAPSHOT"]
+          :dev-dependencies [[noir-test2 "1.0.0-SNAPSHOT"]
+          					[lein-git-deps "0.0.1-SNAPSHOT"]]
           ...
-		  :git-dependencies [["git@github.com:nickbauman/htmlcleaner.git"]
-                             ["git@github.com:nickbauman/noir.util.test2.git"]]
-		  :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"
-                         ".lein-git-deps/noir.util.test2/src"]
+		  :git-dependencies [["git@github.com:nickbauman/htmlcleaner.git"]]
+		  :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"]
           ...)
 
 Then, run:
