@@ -28,21 +28,16 @@ Give it a try. This should run all your existing tests for Noir with just a chan
 
 ## Usage
 
-To use this, add *lein-git-deps* as well as the *noir-test2* dependency to your :dev-dependencies property in your project.clj. Then add git repo for the HTML parsing library the tests use.
+You will need leiningen. Add the *noir-test2* dependency to your :dev-dependencies property in your project.clj
 
-        (defproject yourproject "1.0.0-SNAPSHOT"
+        (defproject yourproject "1.0-WHATEVER"
           ...
-          :dev-dependencies [[noir-test2 "1.0.0-SNAPSHOT"]
-          					[lein-git-deps "0.0.1-SNAPSHOT"]]
-          ...
-		  :git-dependencies [["git@github.com:nickbauman/htmlcleaner.git"]]
-		  :extra-classpath-dirs [".lein-git-deps/htmlcleaner/target/classes"]
+          :dev-dependencies [[noir-test2 "1.0.0-SNAPSHOT"]]
           ...)
 
 Then, run:
 
         lein deps
-        lein git-deps
 
 ## License
 
